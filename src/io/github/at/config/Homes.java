@@ -1,6 +1,6 @@
 package io.github.at.config;
 
-import io.github.at.main.Main;
+import io.github.at.main.CoreClass;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -13,37 +13,44 @@ import java.util.HashMap;
 
 public class Homes {
 
-    public static File HomesFile = new File(Main.getInstance().getDataFolder(),"homes.yml");
-    public static FileConfiguration homes = YamlConfiguration.loadConfiguration(HomesFile);
+    public static File homesFile = new File(CoreClass.getInstance().getDataFolder(),"homes.yml");
+    public static FileConfiguration homes = YamlConfiguration.loadConfiguration(homesFile);
 
     public static void save() throws IOException {
-        homes.save(HomesFile);
+        homes.save(homesFile);
     }
 
-    public static void setHome(Player player, String homename, Location location) throws IOException {
-        homes.set(player.getUniqueId().toString() + "." + homename + ".x", location.getX());
-        homes.set(player.getUniqueId().toString() + "." + homename + ".y", location.getY());
-        homes.set(player.getUniqueId().toString() + "." + homename + ".z", location.getZ());
-        homes.set(player.getUniqueId().toString() + "." + homename + ".world", location.getWorld().getName());
-        homes.set(player.getUniqueId().toString() + "." + homename + ".yaw", location.getYaw());
-        homes.set(player.getUniqueId().toString() + "." + homename + ".pitch", location.getPitch());
+    public static void setHome(String uuid, String homename, Location location) throws IOException {
+        if (homename.contains(".")) {
+            String s = homename;
+            homename = homename.replaceAll("\\.", "_");
+            homes.set(uuid + "." + homename + ".name", s);
+
+        }
+        homes.set(uuid + "." + homename + ".x", location.getX());
+        homes.set(uuid + "." + homename + ".y", location.getY());
+        homes.set(uuid + "." + homename + ".z", location.getZ());
+        homes.set(uuid + "." + homename + ".world", location.getWorld().getName());
+        homes.set(uuid + "." + homename + ".yaw", location.getYaw());
+        homes.set(uuid + "." + homename + ".pitch", location.getPitch());
         save();
     }
 
-    public static HashMap<String,Location> getHomes(Player player){
+    public static HashMap<String,Location> getHomes(String uuid){
         HashMap<String,Location> homes = new HashMap<>();
         try {
-            for (String home: Homes.homes.getConfigurationSection(player.getUniqueId().toString()).getKeys(false)) {
-                Location location = new Location(Bukkit.getWorld(Homes.homes.getString(player.getUniqueId().toString() + "." + home + ".world")), // Gets world from name
-                        Homes.homes.getDouble(player.getUniqueId().toString() + "." + home + ".x"), // Gets X value
-                        Homes.homes.getDouble(player.getUniqueId().toString() + "." + home + ".y"), // Gets Y value
-                        Homes.homes.getDouble(player.getUniqueId().toString() + "." + home + ".z"), // Gets Z value
-                        Float.valueOf(String.valueOf(Homes.homes.getDouble(player.getUniqueId().toString() + "." + home + ".yaw"))),
-                        Float.valueOf(String.valueOf(Homes.homes.getDouble(player.getUniqueId().toString() + "." + home + ".pitch"))));
+            for (String home: Homes.homes.getConfigurationSection(uuid).getKeys(false)) {
+                Location location = new Location(Bukkit.getWorld(Homes.homes.getString(uuid + "." + home + ".world")), // Gets world from name
+                        Homes.homes.getDouble(uuid + "." + home + ".x"), // Gets X value
+                        Homes.homes.getDouble(uuid + "." + home + ".y"), // Gets Y value
+                        Homes.homes.getDouble(uuid + "." + home + ".z"), // Gets Z value
+                        Float.parseFloat(String.valueOf(Homes.homes.getDouble(uuid + "." + home + ".yaw"))),
+                        Float.parseFloat(String.valueOf(Homes.homes.getDouble(uuid + "." + home + ".pitch"))));
+                home = Homes.homes.getString(uuid + "." + home + ".name") != null ? Homes.homes.getString(uuid + "." + home + ".name") : home;
                 homes.put(home,location);
             }
         } catch (NullPointerException ex) {
-            Homes.homes.createSection(player.getUniqueId().toString());
+            Homes.homes.createSection(uuid);
         }
 
         return homes;
@@ -54,5 +61,11 @@ public class Homes {
         save();
     }
 
-
+    public static void reloadHomes() throws IOException {
+        if (homesFile == null) {
+            homesFile = new File(CoreClass.getInstance().getDataFolder(), "homes.yml");
+        }
+        homes = YamlConfiguration.loadConfiguration(homesFile);
+        save();
+    }
 }

@@ -1,7 +1,7 @@
 package io.github.at.config;
 
 import io.github.at.events.TeleportTrackingManager;
-import io.github.at.main.Main;
+import io.github.at.main.CoreClass;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -10,9 +10,10 @@ import org.bukkit.entity.Player;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.UUID;
 
 public class LastLocations {
-    public static File configFile = new File(Main.getInstance().getDataFolder(),"last-locations.yml");
+    public static File configFile = new File(CoreClass.getInstance().getDataFolder(),"last-locations.yml");
     public static FileConfiguration config = YamlConfiguration.loadConfiguration(configFile);
 
     public static void save() throws IOException {
@@ -20,25 +21,34 @@ public class LastLocations {
     }
 
     public static void saveLocations() {
-        for (Player player : TeleportTrackingManager.getLastLocations().keySet()) {
-            Location loc = TeleportTrackingManager.getLastLocation(player);
-            // Format: player-uuid: x.y.z.yaw.pitch.world
-            config.addDefault(player.getUniqueId().toString(),
-                    loc.getX() + ":"
-                    + loc.getY() + ":"
-                    + loc.getZ() + ":"
-                    + loc.getYaw() + ":"
-                    + loc.getPitch() + ":"
-                    + loc.getWorld().getName());
+        for (UUID uuid : TeleportTrackingManager.getLastLocations().keySet()) {
+            try {
+                Location loc = TeleportTrackingManager.getLastLocation(uuid);
+                // Format: player-uuid: x.y.z.yaw.pitch.world
+                config.set(uuid.toString(),
+                        loc.getX() + ":"
+                                + loc.getY() + ":"
+                                + loc.getZ() + ":"
+                                + loc.getYaw() + ":"
+                                + loc.getPitch() + ":"
+                                + loc.getWorld().getName());
+            } catch (NullPointerException ignored) { // Null location, no idea what causes it
+            }
+
         }
-        for (Player player : TeleportTrackingManager.getDeathLocations().keySet()) {
-            Location loc = TeleportTrackingManager.getDeathLocation(player);
-            config.addDefault("death." + player.getUniqueId().toString(),  loc.getX() + ":"
-                    + loc.getY() + ":"
-                    + loc.getZ() + ":"
-                    + loc.getYaw() + ":"
-                    + loc.getPitch() + ":"
-                    + loc.getWorld().getName());
+        for (UUID uuid : TeleportTrackingManager.getDeathLocations().keySet()) {
+            try {
+                Location loc = TeleportTrackingManager.getDeathLocation(uuid);
+                config.set("death." + uuid.toString(),  loc.getX() + ":"
+                        + loc.getY() + ":"
+                        + loc.getZ() + ":"
+                        + loc.getYaw() + ":"
+                        + loc.getPitch() + ":"
+                        + loc.getWorld().getName());
+            } catch (NullPointerException ignored) { // Means that the player never teleported
+
+            }
+
         }
         config.options().copyDefaults(true);
         try {
@@ -75,5 +85,13 @@ public class LastLocations {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public static void reloadBackLocations() throws IOException {
+        if (configFile == null) {
+            configFile = new File(CoreClass.getInstance().getDataFolder(), "last-locations.yml");
+        }
+        config = YamlConfiguration.loadConfiguration(configFile);
+        save();
     }
 }

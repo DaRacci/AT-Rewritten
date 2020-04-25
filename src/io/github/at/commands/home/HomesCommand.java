@@ -1,5 +1,6 @@
 package io.github.at.commands.home;
 
+import fanciful.FancyMessage;
 import io.github.at.config.Config;
 import io.github.at.config.CustomMessages;
 import io.github.at.config.Homes;
@@ -17,52 +18,64 @@ public class HomesCommand implements CommandExecutor {
                 if (args.length>0) {
                     if (sender.hasPermission("at.admin.homes")) {
                         Player player = Bukkit.getPlayer(args[0]);
-                        StringBuilder hlist = new StringBuilder();
-                        hlist.append(CustomMessages.getString("Info.homesOther").replaceAll("\\{player}", player.getName()));
-                        if (Bukkit.getPlayer(args[0]) != null) {
-                            try {
-                                if (Homes.getHomes(player).size()>0) {
-                                    for (String home: Homes.getHomes(player).keySet()) {
-                                        hlist.append(home + ", ");
+                        if (player != null) {
+                            String uuid = player.getUniqueId().toString();
+                            FancyMessage hlist = new FancyMessage();
+                            hlist.text(CustomMessages.getString("Info.homesOther").replaceAll("\\{player}", player.getName()));
+                            if (Bukkit.getPlayer(args[0]) != null) {
+                                try {
+                                    if (Homes.getHomes(uuid).size()>0) {
+                                        for (String home : Homes.getHomes(uuid).keySet()) {
+                                            hlist.then(home)
+                                                    .command("/home " + home)
+                                                    .tooltip(CustomMessages.getString("Tooltip.homes").replaceAll("\\{home}", home))
+                                                    .then(", ");
+                                        }
+                                        hlist.text(""); //Removes trailing comma
+                                    } else {
+                                        sender.sendMessage(CustomMessages.getString("Error.noHomesOther").replaceAll("\\{player}", player.getName()));
+                                        return true;
                                     }
-                                } else {
-                                    sender.sendMessage(CustomMessages.getString("Error.noHomesOther").replaceAll("\\{player}", player.getName()));
-                                    return false;
-                                }
 
-                            } catch (NullPointerException ex) {
-                                sender.sendMessage(CustomMessages.getString("Error.noHomesOther").replaceAll("\\{player}", player.getName()));
-                                return false;
+                                } catch (NullPointerException ex) {
+                                    sender.sendMessage(CustomMessages.getString("Error.noHomesOther").replaceAll("\\{player}", player.getName()));
+                                    return true;
+                                }
+                                hlist.send(sender);
+                                return true;
                             }
-                            sender.sendMessage(hlist.toString());
-                            return false;
-                        }
+                        } // Otherwise we'll just get the main player's homes
                     }
                 }
                 if (sender instanceof Player) {
                     Player player = (Player)sender;
-                    StringBuilder hlist = new StringBuilder();
-                    hlist.append(CustomMessages.getString("Info.homes"));
+                    String uuid = player.getUniqueId().toString();
+                    FancyMessage hList = new FancyMessage();
+                    hList.text(CustomMessages.getString("Info.homes"));
                     try {
-                        if (Homes.getHomes(player).size()>0){
-                            for (String home: Homes.getHomes(player).keySet()) {
-                                hlist.append(home + ", ");
+                        if (Homes.getHomes(uuid).size()>0){
+                            for(String home : Homes.getHomes(uuid).keySet()){
+                                hList.then(home)
+                                        .command("/home " + home)
+                                        .tooltip(CustomMessages.getString("Tooltip.homes").replaceAll("\\{home}", home))
+                                        .then(", ");
                             }
+                            hList.text(""); //Removes trailing comma
                         } else {
                             sender.sendMessage(CustomMessages.getString("Error.noHomes"));
-                            return false;
+                            return true;
                         }
+
                     } catch (NullPointerException ex) { // If a player has never set any homes
                         sender.sendMessage(CustomMessages.getString("Error.noHomes"));
-                        return false;
+                        return true;
                     }
-                    sender.sendMessage(hlist.toString());
+                    hList.send(player);
                 }
             }
         } else {
             sender.sendMessage(CustomMessages.getString("Error.featureDisabled"));
-            return false;
         }
-        return false;
+        return true;
     }
 }

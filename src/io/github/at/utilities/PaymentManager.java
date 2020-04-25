@@ -2,7 +2,7 @@ package io.github.at.utilities;
 
 import io.github.at.config.Config;
 import io.github.at.config.CustomMessages;
-import io.github.at.main.Main;
+import io.github.at.main.CoreClass;
 import net.milkbowl.vault.economy.EconomyResponse;
 import org.bukkit.entity.Player;
 
@@ -13,13 +13,13 @@ public class PaymentManager {
     public static boolean canPay(String command, Player player) {
         if (Config.isUsingEXPPayment(command)){
             if (player.getLevel()<Config.getEXPTeleportPrice(command)){
-                player.sendMessage(CustomMessages.getString("Error.notEnoughEXP").replaceAll("\\{levels}", String.valueOf(Config.getEXPTeleportPrice("tpa"))));
+                player.sendMessage(CustomMessages.getString("Error.notEnoughEXP").replaceAll("\\{levels}", String.valueOf(Config.getEXPTeleportPrice(command))));
                 return false;
             }
         }
-        if (Main.getVault() != null && Config.isUsingVault(command)) {
-            if (Main.getVault().getBalance(player)<Config.getTeleportPrice(command)){
-                player.sendMessage(CustomMessages.getString("Error.notEnoughMoney").replaceAll("\\{amount}", String.valueOf(Config.getTeleportPrice("tpa"))));
+        if (CoreClass.getVault() != null && Config.isUsingVault(command)) {
+            if (CoreClass.getVault().getBalance(player)<Config.getTeleportPrice(command)){
+                player.sendMessage(CustomMessages.getString("Error.notEnoughMoney").replaceAll("\\{amount}", String.valueOf(Config.getTeleportPrice(command))));
                 return false;
             }
         }
@@ -28,22 +28,24 @@ public class PaymentManager {
 
     // Method used to manage payments
     public static void withdraw(String command, Player player) {
-        if (Config.isUsingEXPPayment(command)) {
-            if (player.getLevel()>Config.getEXPTeleportPrice(command)){
-                int currentLevel = player.getLevel();
-                player.setLevel(currentLevel - Config.getEXPTeleportPrice(command));
-                player.sendMessage(CustomMessages.getString("Info.paymentEXP")
-                        .replaceAll("\\{amount}", String.valueOf(Config.getEXPTeleportPrice(command))
-                        .replaceAll("\\{levels}", String.valueOf(player.getLevel()))));
+        if (!player.hasPermission("at.admin.bypass")) {
+            if (Config.isUsingEXPPayment(command)) {
+                if (player.getLevel() >= Config.getEXPTeleportPrice(command)){
+                    int currentLevel = player.getLevel();
+                    player.setLevel(currentLevel - Config.getEXPTeleportPrice(command));
+                    player.sendMessage(CustomMessages.getString("Info.paymentEXP")
+                            .replaceAll("\\{amount}", String.valueOf(Config.getEXPTeleportPrice(command)))
+                            .replaceAll("\\{levels}", String.valueOf(player.getLevel())));
+                }
             }
-        }
-        if  (Main.getVault() != null && Config.isUsingVault(command)) {
-            if (Main.getVault().getBalance(player)>Config.getTeleportPrice(command)){
-                EconomyResponse payment = Main.getVault().withdrawPlayer(player, Config.getTeleportPrice(command));
-                if (payment.transactionSuccess()){
-                    player.sendMessage(CustomMessages.getString("Info.paymentVault")
-                            .replaceAll("\\{amount}", String.valueOf(Config.getTeleportPrice(command)))
-                            .replaceAll("\\{balance}", String.valueOf(Main.getVault().getBalance(player))));
+            if  (CoreClass.getVault() != null && Config.isUsingVault(command)) {
+                if (CoreClass.getVault().getBalance(player) >= Config.getTeleportPrice(command)){
+                    EconomyResponse payment = CoreClass.getVault().withdrawPlayer(player, Config.getTeleportPrice(command));
+                    if (payment.transactionSuccess()){
+                        player.sendMessage(CustomMessages.getString("Info.paymentVault")
+                                .replaceAll("\\{amount}", String.valueOf(Config.getTeleportPrice(command)))
+                                .replaceAll("\\{balance}", String.valueOf(CoreClass.getVault().getBalance(player))));
+                    }
                 }
             }
         }

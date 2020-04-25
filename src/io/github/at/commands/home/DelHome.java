@@ -23,17 +23,13 @@ public class DelHome implements CommandExecutor {
                             if (sender.hasPermission("at.admin.delhome")) {
                                 if (args.length>1) {
                                     Player target = Bukkit.getOfflinePlayer(args[0]).getPlayer();
-                                    delHome(target, args[1]);
-                                } else {
-                                    sender.sendMessage(CustomMessages.getString("Error.noHomeInput"));
-                                    return false;
+                                    delHome(target, player, args[1]);
                                 }
                             }
                         }
                         delHome(player, args[0]);
                     } else {
                         sender.sendMessage(CustomMessages.getString("Error.noHomeInput"));
-                        return false;
                     }
                 }
             } else {
@@ -41,30 +37,41 @@ public class DelHome implements CommandExecutor {
             }
         } else {
             sender.sendMessage(CustomMessages.getString("Error.featureDisabled"));
-            return false;
         }
-        return false;
+        return true;
     }
 
-    private void delHome(Player player, String name) {
+    private void delHome(Player player, Player sender, String name) {
         try {
-            if (Homes.getHomes(player).containsKey(name)) {
+            if (Homes.getHomes(player.getUniqueId().toString()).containsKey(name)) {
                 try {
                     Homes.delHome(player, name);
-                    player.sendMessage(CustomMessages.getString("Info.deletedHome").replaceAll("\\{home}", name));
+                    if (sender == player) {
+                        sender.sendMessage(CustomMessages.getString("Info.deletedHome").replaceAll("\\{home}", name));
+                    } else {
+                        sender.sendMessage(CustomMessages.getString("Info.deletedHomeOther").replaceAll("\\{home}", name).replaceAll("\\{player}", player.getName()));
+                    }
+
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             } else {
-                player.sendMessage(CustomMessages.getString("Error.noSuchHome"));
+                sender.sendMessage(CustomMessages.getString("Error.noSuchHome"));
             }
         } catch (NullPointerException ex) {
             try {
                 Homes.delHome(player, name);
-                player.sendMessage(CustomMessages.getString("Info.deletedHome").replaceAll("\\{home}", name));
+                if (sender == player) {
+                    sender.sendMessage(CustomMessages.getString("Info.deletedHome").replaceAll("\\{home}", name));
+                } else {
+                    sender.sendMessage(CustomMessages.getString("Info.deletedHomeOther").replaceAll("\\{home}", name).replaceAll("\\{player}", player.getName()));
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
+    }
+    private void delHome(Player player, String name) {
+        delHome(player, player, name);
     }
 }

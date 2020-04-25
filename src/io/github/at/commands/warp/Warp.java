@@ -1,10 +1,11 @@
 package io.github.at.commands.warp;
 
+import io.github.at.api.ATTeleportEvent;
 import io.github.at.config.Config;
 import io.github.at.config.CustomMessages;
 import io.github.at.config.Warps;
 import io.github.at.events.MovementManager;
-import io.github.at.main.Main;
+import io.github.at.main.CoreClass;
 import io.github.at.utilities.DistanceLimiter;
 import io.github.at.utilities.PaymentManager;
 import org.bukkit.Location;
@@ -27,21 +28,22 @@ public class Warp implements CommandExecutor {
                             Player player = (Player) sender;
                             Location warp = player.getLocation();
                             if (args.length > 1) {
-                                try {
-                                    Warps.setWarp(args[1], warp);
-                                    sender.sendMessage(CustomMessages.getString("Info.setWarp").replaceAll("\\{warp}", args[1]));
-                                } catch (IOException e) {
-                                    e.printStackTrace();
+                                if (args[1].matches("^[a-zA-Z0-9]+$")) {
+                                    try {
+                                        Warps.setWarp(args[1], warp);
+                                        sender.sendMessage(CustomMessages.getString("Info.setWarp").replaceAll("\\{warp}", args[1]));
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
+                                    }
+                                } else {
+                                    sender.sendMessage(CustomMessages.getString("Error.invalidName"));
                                 }
-
                             } else {
                                 sender.sendMessage(CustomMessages.getString("Error.noWarpInput"));
-                                return false;
                             }
                         }
                     } else {
                         sender.sendMessage(CustomMessages.getString("Error.noPermission"));
-                        return false;
                     }
                 } else if (args[0].equalsIgnoreCase("delete")) {
                     if (sender.hasPermission("at.admin.warpdel")) {
@@ -58,39 +60,37 @@ public class Warp implements CommandExecutor {
                             }
                         } else {
                             sender.sendMessage(CustomMessages.getString("Error.noWarpInput"));
-                            return false;
                         }
                     } else {
                         sender.sendMessage(CustomMessages.getString("Error.noPermission"));
-                        return false;
                     }
                 } else if (sender.hasPermission("at.member.warp")) {
                     if (sender instanceof Player) {
                         Player player = (Player) sender;
                         if (Warps.getWarps().containsKey(args[0])) {
+                            if (MovementManager.getMovement().containsKey(player)) {
+                                player.sendMessage(CustomMessages.getString("Error.onCountdown"));
+                                return true;
+                            }
                             Location warp = Warps.getWarps().get(args[0]);
                             warp(warp, player, args[0]);
                         } else {
                             sender.sendMessage(CustomMessages.getString("Error.noSuchWarp"));
-                            return false;
                         }
                     } else {
                         sender.sendMessage(CustomMessages.getString("Error.notAPlayer"));
                     }
                 } else {
                     sender.sendMessage(CustomMessages.getString("Error.noPermission"));
-                    return false;
                 }
             } else {
                 sender.sendMessage(CustomMessages.getString("Error.noWarpInput"));
-                return false;
             }
 
         } else {
             sender.sendMessage(CustomMessages.getString("Error.featureDisabled"));
-            return false;
         }
-        return false;
+        return true;
     }
 
     public static void warp(Location loc, Player player, String name) {
@@ -98,27 +98,34 @@ public class Warp implements CommandExecutor {
             player.sendMessage(CustomMessages.getString("Error.tooFarAway"));
             return;
         }
-        if (PaymentManager.canPay("warp", player)) {
+        if (!player.hasPermission("at.member.warp." + name) && !player.hasPermission("at.member.warp.*")) {
+            player.sendMessage(CustomMessages.getString("Error.noPermissionWarp").replaceAll("\\{warp}", name));
+            return;
+        }
+        ATTeleportEvent event = new ATTeleportEvent(player, loc, player.getLocation(), name, ATTeleportEvent.TeleportType.WARP);
+        if (!event.isCancelled()) {
+            if (PaymentManager.canPay("warp", player)) {
 
-            if (Config.getTeleportTimer("warp") > 0) {
-                BukkitRunnable movementtimer = new BukkitRunnable() {
-                    @Override
-                    public void run() {
-                        player.teleport(loc);
-                        MovementManager.getMovement().remove(player);
-                        player.sendMessage(CustomMessages.getString("Teleport.teleportingToWarp").replaceAll("\\{warp}", name));
-                        PaymentManager.withdraw("warp", player);
+                if (Config.getTeleportTimer("warp") > 0) {
+                    BukkitRunnable movementtimer = new BukkitRunnable() {
+                        @Override
+                        public void run() {
+                            player.teleport(loc);
+                            MovementManager.getMovement().remove(player.getUniqueId());
+                            player.sendMessage(CustomMessages.getString("Teleport.teleportingToWarp").replaceAll("\\{warp}", name));
+                            PaymentManager.withdraw("warp", player);
 
-                    }
-                };
-                MovementManager.getMovement().put(player, movementtimer);
-                movementtimer.runTaskLater(Main.getInstance(), Config.getTeleportTimer("warp")*20);
-                player.sendMessage(CustomMessages.getString("Teleport.eventBeforeTP").replaceAll("\\{countdown}" , String.valueOf(Config.getTeleportTimer("warp"))));
+                        }
+                    };
+                    MovementManager.getMovement().put(player.getUniqueId(), movementtimer);
+                    movementtimer.runTaskLater(CoreClass.getInstance(), Config.getTeleportTimer("warp")*20);
+                    player.sendMessage(CustomMessages.getEventBeforeTPMessage().replaceAll("\\{countdown}" , String.valueOf(Config.getTeleportTimer("warp"))));
 
-            } else {
-                player.teleport(loc);
-                PaymentManager.withdraw("warp", player);
-                player.sendMessage(CustomMessages.getString("Teleport.teleportingToWarp").replaceAll("\\{warp}", name));
+                } else {
+                    player.teleport(loc);
+                    PaymentManager.withdraw("warp", player);
+                    player.sendMessage(CustomMessages.getString("Teleport.teleportingToWarp").replaceAll("\\{warp}", name));
+                }
             }
         }
     }

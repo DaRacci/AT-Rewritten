@@ -22,29 +22,31 @@ public class TpBlockCommand implements CommandExecutor {
                     if (args.length>0){
                         if (args[0].equalsIgnoreCase(player.getName())){
                             sender.sendMessage(CustomMessages.getString("Error.blockSelf"));
-                            return false;
+                            return true;
                         }
                         OfflinePlayer target = Bukkit.getOfflinePlayer(args[0]);
                         if (target == null){
                             sender.sendMessage(CustomMessages.getString("Error.noSuchPlayer"));
-                            return false;
+                            return true;
                         } else {
                             if (TpBlock.getBlockedPlayers(player).contains(target.getPlayer())){
                                 sender.sendMessage(CustomMessages.getString("Error.alreadyBlocked"));
-                                return false;
                             } else {
                                 try {
                                     TpBlock.addBlockedPlayer(player, target.getPlayer());
                                 } catch (IOException e) {
                                     e.printStackTrace();
+                                } catch (NullPointerException e) {
+                                    sender.sendMessage(CustomMessages.getString("Error.noSuchPlayer"));
+                                    return true;
                                 }
                                 sender.sendMessage(CustomMessages.getString("Info.blockPlayer").replaceAll("\\{player}", target.getName()));
-                                return false;
                             }
+                            return true;
                         }
                     } else {
                         sender.sendMessage(CustomMessages.getString("Error.noPlayerInput"));
-                        return false;
+                        return true;
                     }
                 } else {
                     sender.sendMessage(CustomMessages.getString("Error.notAPlayer"));
@@ -52,8 +54,8 @@ public class TpBlockCommand implements CommandExecutor {
             }
         } else {
             sender.sendMessage(CustomMessages.getString("Error.featureDisabled"));
-            return false;
+            return true;
         }
-        return false;
+        return true;
     }
 }

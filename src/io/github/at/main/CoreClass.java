@@ -1,44 +1,50 @@
 package io.github.at.main;
 
+import io.github.at.UpdateChecker;
 import io.github.at.commands.AtHelp;
 import io.github.at.commands.AtInfo;
 import io.github.at.commands.AtReload;
-import io.github.at.commands.home.DelHome;
-import io.github.at.commands.home.Home;
-import io.github.at.commands.home.HomesCommand;
-import io.github.at.commands.home.SetHome;
+import io.github.at.commands.home.*;
 import io.github.at.commands.spawn.SetSpawn;
 import io.github.at.commands.spawn.SpawnCommand;
 import io.github.at.commands.teleport.*;
 import io.github.at.commands.warp.Warp;
+import io.github.at.commands.warp.WarpTabCompleter;
 import io.github.at.commands.warp.WarpsCommand;
 import io.github.at.config.*;
 import io.github.at.events.AtSigns;
 import io.github.at.events.MovementManager;
 import io.github.at.events.TeleportTrackingManager;
 import net.milkbowl.vault.economy.Economy;
+import org.bukkit.ChatColor;
 import org.bukkit.WorldBorder;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.IOException;
 
-public class Main extends JavaPlugin {
+public class CoreClass extends JavaPlugin {
+
+    public static String pltitle(String title) {
+        title = "&3[&bAdvancedTeleport&3] " + title;
+        return ChatColor.translateAlternateColorCodes('&', title);
+    }
 
 
     // TODO SUGGESTIONS THAT HAVE BEEN MADE
-    // Back command
+    // Back command (done)
     // /rtp <World name> (done)
-    // Custom messages (doing)
-    // Payment for more than just /tpa and /tpahere
+    // Custom messages (done)
+    // Payment for more than just /tpa and /tpahere (done)
     // Payment using items (maybe???)
     // MySQL compatibility (AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA)
 
     private static Economy Vault;
     public static WorldBorder worldBorder;
-    private static Main Instance;
+    private static CoreClass Instance;
 
-    public static Main getInstance() {
+    public static CoreClass getInstance() {
         return Instance;
     }
 
@@ -75,11 +81,25 @@ public class Main extends JavaPlugin {
             LastLocations.save();
             Warps.save();
             Spawn.save();
+            GUI.setDefaults();
         } catch (IOException e) {
             e.printStackTrace();
         }
         setupEconomy();
         new Metrics(this);
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                Object[] update = UpdateChecker.getUpdate();
+                if (update != null) {
+                    getServer().getConsoleSender().sendMessage(pltitle(ChatColor.AQUA + "" + ChatColor.BOLD + "A new version is available!") + "\n" + pltitle(ChatColor.AQUA + "" + ChatColor.BOLD + "Current version you're using: " + ChatColor.WHITE + getDescription().getVersion()) + "\n" + pltitle(ChatColor.AQUA + "" + ChatColor.BOLD + "Latest version available: " + ChatColor.WHITE + update[0]));
+                    getLogger().info(pltitle(ChatColor.AQUA + "Download link: https://www.spigotmc.org/resources/advanced-teleport.64139/"));
+                } else {
+                    getLogger().info(pltitle(ChatColor.AQUA + "Plugin is up to date!"));
+                }
+                TpLoc.a();
+            }
+        }.runTaskAsynchronously(this);
     }
 
     @Override
@@ -111,6 +131,8 @@ public class Main extends JavaPlugin {
         getCommand("tpahere").setExecutor(new TpaHere());
         getCommand("tpall").setExecutor(new TpAll());
         getCommand("tpalist").setExecutor(new TpList());
+        getCommand("toggletp").setExecutor(new ToggleTP());
+        getCommand("tploc").setExecutor(new TpLoc());
 
         // Home commands
         getCommand("home").setExecutor(new Home());
@@ -125,6 +147,9 @@ public class Main extends JavaPlugin {
         // Spawn commands
         getCommand("spawn").setExecutor(new SpawnCommand());
         getCommand("setspawn").setExecutor(new SetSpawn());
+
+        getCommand("warp").setTabCompleter(new WarpTabCompleter());
+        getCommand("home").setTabCompleter(new HomeTabCompleter());
     }
 
     private void registerEvents() {

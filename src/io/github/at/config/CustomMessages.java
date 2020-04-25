@@ -1,6 +1,6 @@
 package io.github.at.config;
 
-import io.github.at.main.Main;
+import io.github.at.main.CoreClass;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -13,7 +13,7 @@ import java.util.Collections;
 
 public class CustomMessages {
 
-    public static File ConfigFile = new File(Main.getInstance().getDataFolder(),"custom-messages.yml");
+    public static File ConfigFile = new File(CoreClass.getInstance().getDataFolder(),"custom-messages.yml");
     public static FileConfiguration Config = YamlConfiguration.loadConfiguration(ConfigFile);
 
     public static void save() throws IOException {
@@ -22,6 +22,7 @@ public class CustomMessages {
 
     public static void setDefaults() throws IOException {
         Config.addDefault("Teleport.eventBeforeTP" , "&aTeleporting in &b{countdown} seconds&a, please do not move!");
+        Config.addDefault("Teleport.eventBeforeTPMovementAllowed" , "&aTeleporting in &b{countdown} seconds&a!");
         Config.addDefault("Teleport.eventTeleport" , "&aTeleporting...");
         Config.addDefault("Teleport.eventMovement" , "&cTeleport has been cancelled due to movement.");
         Config.addDefault("Teleport.teleportingToSpawn", "&aTeleporting you to spawn!");
@@ -37,7 +38,7 @@ public class CustomMessages {
         Config.addDefault("Error.noPermissionSign", "&cYou do not have permission to make this sign!");
         Config.addDefault("Error.featureDisabled", "&cThis feature has been disabled!");
         Config.addDefault("Error.noRequests", "&cYou do not have any pending requests!");
-    //    Config.addDefault("Error.requestSendFail", "&cCould not send request to &e{player}!");
+    //    Config.addDefault("Error.requestSendFail", "&cCould not send request to &e{player}!"); - NOT USED!!!
         Config.addDefault("Error.tpOff", "&e{player} &chas their teleportation disabled!");
         Config.addDefault("Error.tpBlock", "&c{player} has blocked you from sending requests to them!");
         Config.addDefault("Error.alreadyOn", "&cYour teleport requests are already enabled!");
@@ -73,8 +74,18 @@ public class CustomMessages {
         Config.addDefault("Error.noHomesOtherPlayer", "&e{player} &chasn't got any homes!");
         Config.addDefault("Error.tooFarAway", "&cThe teleport destination is too far away so you can not teleport there!");
         Config.addDefault("Error.noRequestsSent", "&cCouldn't send a request to anyone :(");
+        Config.addDefault("Error.onCountdown","&c&lERROR: &cCan't use command whilst waiting to teleport!");
+        Config.addDefault("Error.noPermissionWarp", "&cYou can't warp to &e{warp}&c!");
+        Config.addDefault("Error.cantTPToWorld", "&cYou can't use the RandomTP in that world!");
+        Config.addDefault("Error.invalidName", "&cHomes and warps may only have letters and numbers in the names!");
+        Config.addDefault("Error.cantTPToWorldLim", "&cYou can't teleport to &e{world}&c!");
+        Config.addDefault("Error.tooFewArguments", "&cToo few arguments!");
+        Config.addDefault("Error.invalidArgs", "&cInvalid arguments!");
+
         Config.addDefault("Info.tpOff", "&aSuccessfully disabled teleport requests!");
         Config.addDefault("Info.tpOn", "&aSuccessfully enabled teleport requests!");
+        Config.addDefault("Info.tpAdminOff", "&aSuccessfully disabled teleport requests for &e{player}&a!");
+        Config.addDefault("Info.tpAdminOn", "&aSuccessfully enabled teleport requests for &e{player}&a!");
         Config.addDefault("Info.requestSent", "&aSuccessfully sent request to &e{player}&a!" +
                 "\n&aThey've got &e{lifetime} &ato respond!" +
                 "\n&aTo cancel the request use &e/tpcancel &ato cancel it.");
@@ -95,7 +106,9 @@ public class CustomMessages {
         Config.addDefault("Info.requestDeclinedResponder", "&e{player} &ahas declined your teleport request!");
 
         Config.addDefault("Info.deletedHome", "&aSuccessfully deleted the home &e{home}&a!");
+        Config.addDefault("Info.deletedHomeOther", "&aSuccessfully deleted the home &e{home} &afor &e{player}&a!");
         Config.addDefault("Info.setHome", "&aSuccessfully set the home &e{home}&a!");
+        Config.addDefault("Info.setHomeOther", "&aSuccessfully set the home &e{home} &afor &e{player}&a!");
         Config.addDefault("Info.setSpawn", "&aSuccessfully set the spawnpoint!");
         Config.addDefault("Info.setWarp", "&aSuccessfully set the warp &e{warp}&a!");
         Config.addDefault("Info.deletedWarp", "&aSuccessfully deleted the warp &e{warp}&a!");
@@ -114,6 +127,10 @@ public class CustomMessages {
         Config.addDefault("Info.createdRTPSign", "&aSuccessfully created the RandomTP sign!");
         Config.addDefault("Info.createdSpawnSign", "&aSuccessfully created the spawn sign!");
         Config.addDefault("Info.tpallRequestSent", "&aSuccessfully sent a teleport request to &e{amount} &aplayer(s)!");
+        Config.addDefault("Info.teleportedToLoc", "&aSuccessfully teleported you to &e{x}&a, &e{y}&a, &e{z}&a! (Yaw: &e{yaw}&a, Pitch: &e{pitch}&a, World: &e{world}&a)");
+        Config.addDefault("Info.teleportedToLocOther", "&aSuccessfully teleported &e{player} &ato &e{x}&a, &e{y}&a, &e{z}&a! (Yaw: &e{yaw}&a, Pitch: &e{pitch}&a, World: &e{world}&a)");
+        Config.addDefault("Tooltip.homes", "&aTeleports you to your home: &e{home}");
+        Config.addDefault("Tooltip.warps", "&aTeleports you to warp: &e{warp}");
         Config.addDefault("Help.mainHelp", new ArrayList<>(Arrays.asList("&b&lAdvancedTeleport Help",
                 "&6Please type &b/athelp <category> &6to get a list of commands about this category.",
                 "&6--[ &bCategories &6]--",
@@ -129,6 +146,7 @@ public class CustomMessages {
                 "&6- /tpaccept - Accepts a player's teleport request.",
                 "&6- /tpdeny - Declines a player's teleport request.",
                 "&6- /tpcancel - Lets you cancel the request you have sent to a player.",
+                "&6- /toggletp - Lets you switch between /tpon and /tpoff.",
                 "&6- /tpon - Enables teleport requests to you.",
                 "&6- /tpoff - Disables teleport requests to you.",
                 "&6- /tpblock <player> - Blocks the player so that they cannot send you teleport requests anymore.",
@@ -137,7 +155,8 @@ public class CustomMessages {
                 "&6- /tpalist - Lists your teleport requests.")));
         Config.addDefault("Help.teleportAdmin", new ArrayList<>(Arrays.asList("&6- /tpo <player> - Instantly teleports you to the player.",
                 "&6- /tpohere <player> - Instantly teleports the player to you.",
-                "&6- /tpall - Sends a teleport request to every online player to teleport to you.")));
+                "&6- /tpall - Sends a teleport request to every online player to teleport to you.",
+                "&6- /tploc <x|~> <y|~> <z|~> [Yaw|~] [Pitch|~] [World|~] [Player] - Teleports you or another player to a specified location.")));
         Config.addDefault("Help.warps", new ArrayList<>(Arrays.asList("&b&lWarps help",
                 "&6- /warp <warp name> - Teleports you to an existing warp point.",
                 "&6- /warps - Gives you a list of warps.")));
@@ -175,10 +194,18 @@ public class CustomMessages {
 
     public static void reloadConfig() throws IOException {
         if (ConfigFile == null) {
-            ConfigFile = new File(Main.getInstance().getDataFolder(), "custom-messages.yml");
+            ConfigFile = new File(CoreClass.getInstance().getDataFolder(), "custom-messages.yml");
         }
         Config = YamlConfiguration.loadConfiguration(ConfigFile);
         setDefaults();
         save();
+    }
+
+    public static String getEventBeforeTPMessage() {
+        if(io.github.at.config.Config.cancelOnMovement()) {
+            return getString("Teleport.eventBeforeTP");
+        } else {
+            return getString("Teleport.eventBeforeTPMovementAllowed");
+        }
     }
 }

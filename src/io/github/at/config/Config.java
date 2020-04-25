@@ -1,8 +1,10 @@
 package io.github.at.config;
 
-import io.github.at.main.Main;
+import io.github.at.main.CoreClass;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.event.player.PlayerTeleportEvent;
 
 import java.io.File;
 import java.io.IOException;
@@ -12,7 +14,7 @@ import java.util.List;
 
 public class Config {
 
-    public static File configFile = new File(Main.getInstance().getDataFolder(),"config.yml");
+    public static File configFile = new File(CoreClass.getInstance().getDataFolder(),"config.yml");
     public static FileConfiguration config = YamlConfiguration.loadConfiguration(configFile);
 
     public static void save() throws IOException {
@@ -26,6 +28,7 @@ public class Config {
         config.addDefault("features.spawn", true);
         config.addDefault("features.randomTP", true);
         config.addDefault("features.homes",true);
+
         // Timers
         config.addDefault("timers.commandCooldown",5);
         config.addDefault("timers.teleportTimer",3);
@@ -39,14 +42,17 @@ public class Config {
       
         config.addDefault("timers.requestLifetime",60);
         config.addDefault("timers.cancel-on-rotate", false);
+        config.addDefault("timers.cancel-on-movement", true);
         // Booleans
         config.addDefault("booleans.useVault" , false);
         config.addDefault("booleans.EXPPayment" , false);
+        //Sounds
+        config.addDefault("sounds.tpa.requestSent", "none");
+        config.addDefault("sounds.tpa.requestReceived", "none");
+
         // Payments
         config.addDefault("payments.vault.teleportPrice" , 100.00);
-        config.addDefault("payments.vault.vaultTPRCost" , 200);
-        config.addDefault("payments.exp.EXPTeleportPrice" , 2);
-        config.addDefault("payments.exp.EXPTPRCost" , 4);
+        config.addDefault("payments.exp.teleportPrice" , 2);
 
         /* What I've done here is I've made it so that admins can modify the amount/exp paid per command, although by default
         *  it will get the values from the normal options.
@@ -78,10 +84,10 @@ public class Config {
         config.addDefault("payments.exp.warp.enabled", "default");
 
         // Spawn
-        config.addDefault("payments.vault.warp.price", "default");
-        config.addDefault("payments.vault.warp.enabled", "default");
-        config.addDefault("payments.exp.warp.price", "default");
-        config.addDefault("payments.exp.warp.enabled", "default");
+        config.addDefault("payments.vault.spawn.price", "default");
+        config.addDefault("payments.vault.spawn.enabled", "default");
+        config.addDefault("payments.exp.spawn.price", "default");
+        config.addDefault("payments.exp.spawn.enabled", "default");
 
         // Home
         config.addDefault("payments.vault.home.price", "default");
@@ -102,6 +108,7 @@ public class Config {
         config.addDefault("tpr.minimum-z", -10000);
         config.addDefault("tpr.useWorldBorder", true);
         config.addDefault("tpr.avoidBlocks", new ArrayList<>(Arrays.asList("WATER","LAVA", "STATIONARY_WATER", "STATIONARY_LAVA")));
+        config.addDefault("tpr.blacklist-worlds", new ArrayList<>());
 
         config.addDefault("distance-limiter.enabled", false);
         config.addDefault("distance-limiter.distance-limit", 1000);
@@ -112,7 +119,21 @@ public class Config {
         config.addDefault("distance-limiter.per-command.warp", true);
         config.addDefault("distance-limiter.per-command.spawn", true);
         config.addDefault("distance-limiter.per-command.back", true);
-      
+
+        config.addDefault("teleport-limit.blacklisted-worlds", new ArrayList<>());
+        config.addDefault("teleport-limit.enabled", false);
+        config.addDefault("teleport-limit.monitor-all-teleports", false);
+        config.addDefault("teleport-limit.per-command.tpa", true);
+        config.addDefault("teleport-limit.per-command.tpahere", true);
+        config.addDefault("teleport-limit.per-command.warp", true);
+        config.addDefault("teleport-limit.per-command.spawn", true);
+        config.addDefault("teleport-limit.per-command.back", true);
+        config.addDefault("teleport-limit.block-to-loc", true);
+        config.addDefault("teleport-limit.block-from-loc", true);
+        config.addDefault("teleport-limit.allow-teleport-within-world", true);
+
+        config.addDefault("back.teleport-causes", new ArrayList<>(Arrays.asList("COMMAND", "PLUGIN", "SPECTATE")));
+
         config.options().copyDefaults(true);
         save();
     }
@@ -128,10 +149,6 @@ public class Config {
         }
     }
 
-    @Deprecated
-    public static int teleportTimer(){
-        return config.getInt("timers.teleportTimer");
-    }
     public static int requestLifetime(){
         return config.getInt("timers.requestLifetime");
     }
@@ -147,8 +164,10 @@ public class Config {
         }
     }
 
-    @Deprecated
-    public static boolean useVault() {return config.getBoolean("booleans.useVault");}
+    /* Used to get the sound name that will be played for specific event.
+     * e.g: Config.getSound("tpa.requestSent") - returns a string (e.g none, BLOCK_ANVIL_LAND) of the sound name that will be played to a player that sent a tpa request
+     */
+    public static String getSound(String event){ return config.getString("sounds." + event).toUpperCase(); }
 
     /* Used to get the amount that is paid for the specific command.
      * e.g: Config.getTeleportPrice("home") - returns a price (e.g $10) for how much the home command costs.
@@ -161,9 +180,6 @@ public class Config {
         }
     }
 
-    @Deprecated
-    public static double teleportPrice() {return config.getDouble("payments.vault.teleportPrice");}
-
     /* Used to check if a specific command is using EXP for payments.
      * e.g: Config.isUsingEXPPayment("home") - returns true if the home command is using payments through experience.
      */
@@ -174,9 +190,6 @@ public class Config {
             return config.getBoolean("payments.exp." + command + ".enabled");
         }
     }
-
-    @Deprecated
-    public static boolean EXPPayment() {return config.getBoolean("booleans.EXPPayment");}
 
     /* Used to get the levels that are paid for the specific command.
      * e.g: Config.getEXPTeleportPrice("home") - returns the level that is required to use the home command.
@@ -189,16 +202,6 @@ public class Config {
         }
     }
 
-    @Deprecated
-    public static int EXPTeleportPrice() {return config.getInt("payments.exp.EXPTeleportPrice");}
-
-    // Replaced with Config.getTeleportPrice("tpr")
-    @Deprecated
-    public static int vaultTPRCost() {return config.getInt("payments.vault.vaultTPRCost");}
-
-    // Replaced with Config.getEXPTeleportPrice("tpr")
-    @Deprecated
-    public static int EXPTPRCost() {return config.getInt("payments.exp.EXPTPRCost");}
     public static boolean useWorldBorder() {return config.getBoolean("tpr.useWorldBorder");}
     public static int maxX() {return config.getInt("tpr.maximum-x");}
     public static int minX() {return config.getInt("tpr.minimum-x");}
@@ -216,22 +219,13 @@ public class Config {
      */
     public static boolean isFeatureEnabled(String feature) { return config.getBoolean("features." + feature); }
 
-    @Deprecated
-    public static boolean featTP() {return config.getBoolean("features.teleport");}
-    @Deprecated
-    public static boolean featWarps() {return config.getBoolean("features.warps");}
-    @Deprecated
-    public static boolean featSpawn() {return config.getBoolean("features.spawn");}
-    @Deprecated
-    public static boolean featRTP() {return config.getBoolean("features.randomTP");}
-    @Deprecated
-    public static boolean featHomes() {return config.getBoolean("features.homes");}
-
     public static boolean cancelOnRotate() {return config.getBoolean("timers.cancel-on-rotate");}
+
+    public static boolean cancelOnMovement() {return config.getBoolean("timers.cancel-on-movement");}
 
     public static void reloadConfig() throws IOException {
         if (configFile == null) {
-            configFile = new File(Main.getInstance().getDataFolder(), "custom-messages.yml");
+            configFile = new File(CoreClass.getInstance().getDataFolder(), "config.yml");
         }
         config = YamlConfiguration.loadConfiguration(configFile);
         setDefaults();
@@ -250,7 +244,39 @@ public class Config {
         return config.getDouble("distance-limiter.distance-limit");
     }
 
+    public static boolean isTeleportLimiterEnabled() {
+        return config.getBoolean("teleport-limit.enabled");
+    }
+
+    public static boolean isTeleportLimiterEnabledForCmd(String command) {
+        return config.getBoolean("teleport-limit.per-command." + command);
+    }
+
+    public static boolean hasStrictTeleportLimiter() {
+        return config.getBoolean("teleport-limit.monitor-all-teleports");
+    }
+
     public static boolean hasStrictDistanceMonitor() {
         return config.getBoolean("distance-limiter.monitor-all-teleports");
+    }
+
+    public static boolean isCauseAllowed(PlayerTeleportEvent.TeleportCause cause) {
+        return config.getStringList("back.teleport-causes").contains(cause.name());
+    }
+
+    public static List<String> getBlacklistedTPRWorlds() {
+        return config.getStringList("tpr.blacklist-worlds");
+    }
+
+    public static List<String> getBlacklistedWorlds() {
+        return config.getStringList("teleport-limit.blacklisted-worlds");
+    }
+
+    public static boolean containsBlacklistedWorld(String worldName, String pos) {
+        return getBlacklistedWorlds().contains(worldName) && config.getBoolean("teleport-limit.block-" + pos + "-loc");
+    }
+
+    public static boolean isAllowingTeleportBetweenWorlds() {
+        return config.getBoolean("teleport-limit.allow-teleport-within-world");
     }
 }

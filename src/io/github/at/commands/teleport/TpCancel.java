@@ -28,29 +28,29 @@ public class TpCancel implements CommandExecutor {
                                 // Player is offline
                                 if (target == null) {
                                     sender.sendMessage(CustomMessages.getString("Errors.noSuchPlayer"));
-                                    return false;
+                                    return true;
                                 } else {
-                                    TPRequest request = TPRequest.getRequestByReqAndResponder(player, target);
+                                    TPRequest request = TPRequest.getRequestByReqAndResponder(target, player);
                                     if (request == null) {
                                         sender.sendMessage(CustomMessages.getString("Error.noRequestsFromPlayer").replaceAll("\\{player}", target.getName()));
-                                        return false;
+                                        return true;
                                     } else {
                                         player.sendMessage(CustomMessages.getString("Info.tpCancel"));
                                         request.getResponder().sendMessage(CustomMessages.getString("Info.tpCancelResponder").replaceAll("\\{player}", player.getName()));
                                         request.destroy();
-                                        return false;
+                                        return true;
                                     }
                                 }
                             } else {
                                 // This utility helps in splitting lists into separate pages, like when you list your plots with PlotMe/PlotSquared.
-                                PagedLists<TPRequest> requests = new PagedLists<>(TPRequest.getRequests(player), 8);
+                                PagedLists<TPRequest> requests = new PagedLists<>(TPRequest.getRequestsByRequester(player), 8);
                                 player.sendMessage(CustomMessages.getString("Info.multipleRequestsCancel"));
                                 // Displays the first 8 requests
                                 for (TPRequest request : requests.getContentsInPage(1)) {
                                     new FancyMessage()
-                                            .command("/tpacancel " + request.getRequester().getName())
+                                            .command("/tpcancel " + request.getResponder().getName())
                                             .text(CustomMessages.getString("Info.multipleRequestsIndex")
-                                                    .replaceAll("\\{player}", request.getRequester().getName()))
+                                                    .replaceAll("\\{player}", request.getResponder().getName()))
                                             .send(player);
                                 }
                                 if (requests.getTotalPages() > 1) {
@@ -63,11 +63,11 @@ public class TpCancel implements CommandExecutor {
                             request.getResponder().sendMessage(CustomMessages.getString("Info.tpCancelResponder").replaceAll("\\{player}", player.getName()));
                             player.sendMessage(CustomMessages.getString("Info.tpCancel"));
                             request.destroy();
-                            return false;
+                            return true;
                         }
                     } else {
                         sender.sendMessage(CustomMessages.getString("Error.noRequests"));
-                        return false;
+                        return true;
                     }
                 } else {
                     sender.sendMessage(CustomMessages.getString("Error.notAPlayer"));
@@ -75,8 +75,8 @@ public class TpCancel implements CommandExecutor {
             }
         } else {
             sender.sendMessage(CustomMessages.getString("Error.featureDisabled"));
-            return false;
+            return true;
         }
-        return false;
+        return true;
     }
 }
