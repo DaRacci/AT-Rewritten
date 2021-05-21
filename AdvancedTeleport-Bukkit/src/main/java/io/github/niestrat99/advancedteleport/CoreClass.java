@@ -37,7 +37,7 @@ public class CoreClass extends JavaPlugin {
 
     private static Economy Vault;
     public static WorldBorder worldBorder;
-    private static CoreClass Instance;
+    private static CoreClass instance;
     private static Permission perms = null;
     private int version;
 
@@ -47,7 +47,7 @@ public class CoreClass extends JavaPlugin {
     private NewConfig config;
 
     public static CoreClass getInstance() {
-        return Instance;
+        return instance;
     }
 
     public static Economy getVault() {
@@ -82,15 +82,20 @@ public class CoreClass extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        Instance = this;
+        instance = this;
         System.out.println("Advanced Teleport is now enabling...");
         setupEconomy();
         setupPermissions();
         try {
             config = new NewConfig();
+            debug("Set up config.");
+            debug("Setting up custom messages...");
         //    Config.setDefaults();
             new CustomMessages(this).load();
+            debug("Set up custom messages.");
+            debug("Setting up spawn...");
             Spawn.save();
+            debug("Set up spawn.");
             new GUI();
         } catch (IOException e) {
             e.printStackTrace();
@@ -128,8 +133,12 @@ public class CoreClass extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        debug("Starting DataFailManager disable procedure.");
         DataFailManager.get().onDisable();
+        debug("Finished DataFailManager disable procedure.");
+        debug("Starting SQLManager disable procedure.");
         SQLManager.closeConnection();
+        debug("Finished SQLManager disable procedure. That's all from us.");
     }
 
     private void registerEvents() {
@@ -187,5 +196,11 @@ public class CoreClass extends JavaPlugin {
 
     public int getVersion() {
         return version;
+    }
+
+    public static void debug(String message) {
+        if (NewConfig.get().DEBUG.get()) {
+            instance.getLogger().info("DEBUG > " + message);
+        }
     }
 }

@@ -87,6 +87,7 @@ public class NewConfig extends CMFile {
 
     public ConfigOption<List<String>> DEFAULT_PERMISSIONS;
     public ConfigOption<Boolean> ALLOW_ADMIN_PERMS;
+    public ConfigOption<Boolean> DEBUG;
 
     private static NewConfig instance;
     private static List<String> defaults;
@@ -329,6 +330,7 @@ public class NewConfig extends CMFile {
         addDefault("allow-admin-permissions-as-default-perms", false, "Allows admin permissions to be allowed as default permissions by default.\n" +
                 "If you want to use admin permissions, it's often recommended to use a permissions plugin such as LuckPerms.\n" +
                 "Do not enable this if you are unsure of the risks this option proposes.");
+        addDefault("debug", false, "Enables the debugging mechanism. Turn on if you're interested or have been prompted to by the developers.");
 
     }
 
@@ -530,6 +532,7 @@ public class NewConfig extends CMFile {
 
         DEFAULT_PERMISSIONS = new ConfigOption<>("default-permissions");
         ALLOW_ADMIN_PERMS = new ConfigOption<>("allow-admin-permissions-as-default-perms");
+        DEBUG = new ConfigOption<>("debug");
 
         new PaymentManager();
         LimitationsManager.init();

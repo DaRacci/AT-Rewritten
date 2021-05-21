@@ -9,6 +9,8 @@ import org.bukkit.World;
 import java.io.*;
 import java.util.*;
 
+import static io.github.niestrat99.advancedteleport.CoreClass.debug;
+
 public class DataFailManager {
 
     private HashMap<Fail, Integer> pendingFails;
@@ -134,11 +136,19 @@ public class DataFailManager {
 
     public void onDisable() {
         try {
+            debug("Checking for data save failures...");
             if (!pendingFails.isEmpty()) {
+                debug("Failed data saves have been found. Checking for the file...");
                 if (!failCsv.exists()) {
-                    failCsv.createNewFile();
+                    debug("fails.csv does not exist, attempting to create it...");
+                    if (!failCsv.createNewFile()) {
+                        debug("Failed to create the fails.csv file. Well, okay then...");
+                        return;
+                    }
                 }
+                debug("Initiating the BufferedWriter to write to the fails.csv file.");
                 BufferedWriter writer = new BufferedWriter(new FileWriter(failCsv));
+                debug("Looping through each fail found...");
                 for (Fail fail : pendingFails.keySet()) {
                     StringBuilder builder = new StringBuilder();
                     builder.append(fail.operation.name());
@@ -147,13 +157,22 @@ public class DataFailManager {
                     }
                     writer.write(builder.toString());
                     writer.write("\n");
+                    debug("Added failure " + fail.operation.name() + " with data " + Arrays.toString(fail.data));
                 }
+                debug("Finished adding all the failures, closing the writer...");
                 writer.close();
+                debug("Finished writing data.");
             } else {
-                failCsv.delete();
+                debug("No data save failures were found, deleting the file...");
+                if (!failCsv.delete()) {
+                    debug("Um the file didn't delete lol what the hell");
+                    return;
+                }
+                debug("Deleted the fails.csv file.");
             }
         } catch (IOException e) {
             e.printStackTrace();
+            debug("Got an error trying to finish all of that.");
         }
 
     }

@@ -9,6 +9,8 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
+import static io.github.niestrat99.advancedteleport.CoreClass.debug;
+
 public abstract class SQLManager {
 
     protected static Connection connection;
@@ -57,14 +59,18 @@ public abstract class SQLManager {
     }
     
     public static void closeConnection() {
+        debug("Checking for a connection...");
         if (connection != null) {
+            debug("There is a connecting, attempting to close it...");
             try {
                 connection.close();
+                debug("Closed the connection.");
             } catch (SQLException exception) {
                 exception.printStackTrace();
+                debug("Failed to close the connection.");
             }
         }
-
+        debug("Should be done with SQL connection now.");
     }
 
     public abstract void createTable();
