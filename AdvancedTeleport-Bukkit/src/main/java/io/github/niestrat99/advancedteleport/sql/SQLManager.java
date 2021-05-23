@@ -7,6 +7,7 @@ import org.bukkit.command.CommandSender;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import static io.github.niestrat99.advancedteleport.CoreClass.debug;
@@ -53,6 +54,9 @@ public abstract class SQLManager {
             Class.forName("org.sqlite.JDBC");
             connection = DriverManager.getConnection("jdbc:sqlite:" + CoreClass.getInstance().getDataFolder() + "/data.db");
             usingSqlite = true;
+            ResultSet version = connection.prepareStatement("SELECT sqlite_version() as version").executeQuery();
+            version.next();
+            debug("SQLite version: " + version.getString("version"));
         } catch (ClassNotFoundException | SQLException e) {
             e.printStackTrace();
         }
