@@ -6,6 +6,8 @@ import io.github.niestrat99.advancedteleport.managers.PluginHookManager;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
+import java.util.function.Supplier;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.geysermc.cumulus.CustomForm;
@@ -41,21 +43,21 @@ public final class ATFloodgatePlayer extends ATPlayer {
 
     public void sendRequestFormTPA(@NotNull final Player sender) {
         SimpleForm form = SimpleForm.builder()
-                .title(CustomMessages.getStringRaw("Forms.tpa-received-title"))
-                .content(CustomMessages.getString("Forms.tpa-received-description", "{player}", sender.getDisplayName()))
-                .button(CustomMessages.getStringRaw("Forms.tpa-received-accept"))
-                .button(CustomMessages.getStringRaw("Forms.tpa-received-deny"))
-                .build();
+            .title(CustomMessages.asString("Forms.tpa-received-title"))
+            .content(CustomMessages.asString("Forms.tpa-received-description", "{player}", (Supplier<Component>) sender::displayName))
+            .button(CustomMessages.asString("Forms.tpa-received-accept"))
+            .button(CustomMessages.asString("Forms.tpa-received-deny"))
+            .build();
 
         sendRequest(sender, form);
     }
 
     public void sendRequestFormTPAHere(@NotNull final Player sender) {
         SimpleForm form = SimpleForm.builder()
-                .title(CustomMessages.getStringRaw("Forms.tpahere-received-title"))
-                .content(CustomMessages.getString("Forms.tpahere-received-description", "{player}", sender.getDisplayName()))
-                .button(CustomMessages.getStringRaw("Forms.tpahere-received-accept"))
-                .button(CustomMessages.getStringRaw("Forms.tpahere-received-deny"))
+                .title(CustomMessages.asString("Forms.tpahere-received-title"))
+                .content(CustomMessages.asString("Forms.tpahere-received-description", "{player}", (Supplier<Component>) sender::displayName))
+                .button(CustomMessages.asString("Forms.tpahere-received-accept"))
+                .button(CustomMessages.asString("Forms.tpahere-received-deny"))
                 .build();
 
         sendRequest(sender, form);
@@ -139,8 +141,8 @@ public final class ATFloodgatePlayer extends ATPlayer {
 
     private void sendInputForm(String command) {
         CustomForm form = CustomForm.builder()
-            .title(CustomMessages.getStringRaw("Forms." + command + "-title"))
-            .input(CustomMessages.getStringRaw("Forms." + command + "-description"))
+            .title(CustomMessages.asString("Forms." + command + "-title"))
+            .input(CustomMessages.asString("Forms." + command + "-description"))
             .build();
 
         form.setResponseHandler(responseData -> {
@@ -165,8 +167,8 @@ public final class ATFloodgatePlayer extends ATPlayer {
         }
 
         CustomForm form = CustomForm.builder()
-            .title(CustomMessages.getStringRaw("Forms." + command + "-title"))
-            .dropdown(CustomMessages.getStringRaw("Forms." + command + "-description"), items)
+            .title(CustomMessages.asString("Forms." + command + "-title"))
+            .dropdown(CustomMessages.asString("Forms." + command + "-description"), items)
             .build();
 
         form.setResponseHandler(responseData -> {

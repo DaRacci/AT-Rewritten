@@ -6,21 +6,17 @@ import io.github.niestrat99.advancedteleport.commands.ATCommand;
 import io.github.niestrat99.advancedteleport.config.CustomMessages;
 import io.github.niestrat99.advancedteleport.config.GUI;
 import io.github.niestrat99.advancedteleport.config.NewConfig;
-import io.github.niestrat99.advancedteleport.fanciful.FancyMessage;
+import io.github.niestrat99.advancedteleport.extensions.ExPermission;
 import io.github.niestrat99.advancedteleport.utilities.IconMenu;
 import io.github.thatsmusic99.configurationmaster.api.ConfigSection;
-import org.bukkit.Location;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.JoinConfiguration;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 
 public class WarpsCommand extends ATCommand {
 
@@ -46,7 +42,7 @@ public class WarpsCommand extends ATCommand {
                 }
             }
             int pages = maxPage - minPage + 1;
-            IconMenu menu = new IconMenu(CustomMessages.getStringRaw("Info.warps"), GUI.getWarpsMenuSlots(), pages, CoreClass.getInstance());
+            IconMenu menu = new IconMenu(CustomMessages.asString("Info.warps"), GUI.getWarpsMenuSlots(), pages, CoreClass.getInstance());
 
             for (String warpName : warps.getKeys(false)) {
                 ConfigSection warp = warps.getConfigSection(warpName);
@@ -103,50 +99,19 @@ public class WarpsCommand extends ATCommand {
             menu.open((Player) sender);
 
         } else {
-            if (AdvancedTeleportAPI.getWarps().size() > 0) {
-                FancyMessage wList = new FancyMessage();
-                wList.text(CustomMessages.getStringRaw("Info.warps"));
-                int count = 0;
-                for(String warp: AdvancedTeleportAPI.getWarps().keySet()){
-                    if (sender.hasPermission("at.member.warp.*") || sender.hasPermission("at.member.warp." + warp)) {
-                        wList.then(warp)
-                                .command("/warp " + warp)
-                                .tooltip(getTooltip(sender, warp))
-                                .then(", ");
-                        count++;
-                    }
-                }
-                wList.text(""); //Removes trailing comma
-                if (count > 0) {
-                    wList.sendProposal(sender, 0);
-                    FancyMessage.send(sender);
-                } else {
-                    sender.sendMessage(CustomMessages.getStringRaw("Error.noWarps"));
-                }
+            final var body = Component.join(
+                JoinConfiguration.commas(true),
+                AdvancedTeleportAPI.getWarps().values().stream()
+                    .filter(warp -> ExPermission.hasPermissionOrStar(sender, "at.member.warp." + warp.getName()))
+                    .map(warp -> Component.text(warp.getName()).hoverEvent(CustomMessages.locationBasedTooltip(sender, warp.getLocation(), "warps")))
+                    .toList()
+            );
 
-            } else {
-                CustomMessages.sendMessage(sender, "Error.noWarps");
-            }
-
+            if (!body.children().isEmpty()) {
+                CustomMessages.sendMessage(sender, "Info.warps");
+                CustomMessages.asAudience(sender).sendMessage(body);
+            } else CustomMessages.sendMessage(sender, "Error.noWarps");
         }
-    }
-
-    private static List<String> getTooltip(CommandSender sender, String warp) {
-        List<String> tooltip = new ArrayList<>(Collections.singletonList(CustomMessages.getStringRaw("Tooltip.warps")));
-        if (sender.hasPermission("at.member.warps.location")) {
-            tooltip.addAll(Arrays.asList(CustomMessages.getStringRaw("Tooltip.location").split("\n")));
-        }
-        List<String> homeTooltip = new ArrayList<>(tooltip);
-        for (int i = 0; i < homeTooltip.size(); i++) {
-            Location warpLoc = AdvancedTeleportAPI.getWarps().get(warp).getLocation();
-
-            homeTooltip.set(i, homeTooltip.get(i).replaceAll("\\{warp}", warp)
-                    .replaceAll("\\{x}", String.valueOf(warpLoc.getBlockX()))
-                    .replaceAll("\\{y}", String.valueOf(warpLoc.getBlockY()))
-                    .replaceAll("\\{z}", String.valueOf(warpLoc.getBlockZ()))
-                    .replaceAll("\\{world}", warpLoc.getWorld().getName()));
-        }
-        return homeTooltip;
     }
 
     @Override

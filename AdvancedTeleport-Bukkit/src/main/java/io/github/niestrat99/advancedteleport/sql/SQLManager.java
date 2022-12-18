@@ -96,7 +96,7 @@ public abstract class SQLManager {
 
         default void onFail() {}
 
-        static SQLCallback<Boolean> getDefaultCallback(CommandSender sender, String success, String fail, String... placeholders) {
+        static SQLCallback<Boolean> getDefaultCallback(CommandSender sender, String success, String fail, Object... placeholders) {
             return new SQLCallback<Boolean>() {
                 @Override
                 public void onSuccess(Boolean data) {
