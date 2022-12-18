@@ -12,6 +12,8 @@ import java.io.IOException;
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.function.BooleanSupplier;
 import java.util.function.Function;
@@ -34,11 +36,13 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+// TODO: Load all components on initialization and reload and formatRaw at that point.
 public class CustomMessages extends ATConfig {
 
     public static CustomMessages config;
     private static HashMap<CommandSender, BukkitRunnable> titleManager;
 
+    // TODO: Clear on reload
     @NotNull private static HashMap<String, PartialComponent> messageCache = new HashMap<>();
 
     @Nullable private static BukkitAudiences audience;
@@ -415,7 +419,9 @@ public class CustomMessages extends ATConfig {
         @NotNull final String path,
         @Nullable final Object... placeholders
     ) throws IllegalArgumentException {
-        final var partial = messageCache.get(path);
+        if (config == null) return Component.text("Error: Config not loaded");
+
+        final var partial = getPartialComponent(path);
         if (partial == null) {
             return Component.text("Invalid path: " + path);
         }
@@ -670,5 +676,19 @@ public class CustomMessages extends ATConfig {
         } catch (final Exception ignored) {}
 
         return false;
+    }
+
+    @Contract(pure = true)
+    private static @Nullable PartialComponent getPartialComponent(@NotNull final String path) {
+        return messageCache.computeIfAbsent(path, p -> {
+            if (!config.contains(p)) return null;
+
+            final var rawString = config.getString(p);
+            final var component = PartialComponent.of(Objects.requireNonNull(rawString));
+
+            component.formatRaw(Map.of("prefix", Objects.requireNonNull(config.getString("Common.prefix"))));
+
+            return component;
+        });
     }
 }
