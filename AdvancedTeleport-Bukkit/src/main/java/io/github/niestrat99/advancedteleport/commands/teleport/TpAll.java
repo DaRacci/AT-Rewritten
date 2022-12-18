@@ -31,7 +31,7 @@ public class TpAll extends TeleportATCommand {
         Player player = (Player) sender;
         int cooldown = CooldownManager.secondsLeftOnCooldown("tpahere", player);
         if (cooldown > 0) {
-            CustomMessages.sendMessage(sender, "Error.onCooldown", "{time}", String.valueOf(cooldown));
+            CustomMessages.sendMessage(sender, "Error.onCooldown", "time", String.valueOf(cooldown));
             return true;
         }
         int players = 0;
@@ -42,7 +42,7 @@ public class TpAll extends TeleportATCommand {
                 continue;
             }
             players++;
-            CustomMessages.sendMessage(target, "Info.tpaRequestHere", "{player}", sender.getName(),
+            CustomMessages.sendMessage(target, "Info.tpaRequestHere", "player", sender.getName(),
                     "{lifetime}", String.valueOf(requestLifetime));
 
             BukkitRunnable run = new BukkitRunnable() {

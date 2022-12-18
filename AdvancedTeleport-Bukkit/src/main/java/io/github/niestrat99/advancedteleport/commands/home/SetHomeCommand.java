@@ -82,7 +82,8 @@ public final class SetHomeCommand extends AbstractHomeCommand {
             "Info.homeSet",
             "Error.setHomeFail",
             () -> err == null,
-            "{home}", homeName, "{player}", playerName
+            "home", homeName,
+            "player", playerName
         ));
 
     }

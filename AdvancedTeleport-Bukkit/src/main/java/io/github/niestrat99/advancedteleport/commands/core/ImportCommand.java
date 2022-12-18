@@ -28,11 +28,11 @@ public class ImportCommand extends SubATCommand {
                 return true;
             }
             if (!plugin.canImport()) {
-                CustomMessages.sendMessage(sender, "Error.cantImport", "{plugin}", args[0]);
+                CustomMessages.sendMessage(sender, "Error.cantImport", "plugin", args[0]);
                 return true;
             }
             if (args.length > 1) {
-                CustomMessages.sendMessage(sender, "Info.importStarted", "{plugin}", args[0]);
+                CustomMessages.sendMessage(sender, "Info.importStarted", "plugin", args[0]);
                 Bukkit.getScheduler().runTaskAsynchronously(CoreClass.getInstance(), () -> {
                     switch (args[1].toLowerCase()) {
                         case "homes" -> plugin.importHomes();
@@ -42,14 +42,14 @@ public class ImportCommand extends SubATCommand {
                         case "players" -> plugin.importPlayerInformation();
                         default -> plugin.importAll();
                     }
-                    CustomMessages.sendMessage(sender, "Info.importFinished", "{plugin}", args[0]);
+                    CustomMessages.sendMessage(sender, "Info.importFinished", "plugin", args[0]);
                 });
 
             } else {
-                CustomMessages.sendMessage(sender, "Info.importStarted", "{plugin}", args[0]);
+                CustomMessages.sendMessage(sender, "Info.importStarted", "plugin", args[0]);
                 Bukkit.getScheduler().runTaskAsynchronously(CoreClass.getInstance(), () -> {
                     plugin.importAll();
-                    CustomMessages.sendMessage(sender, "Info.importFinished", "{plugin}", args[0]);
+                    CustomMessages.sendMessage(sender, "Info.importFinished", "plugin", args[0]);
                 });
             }
 

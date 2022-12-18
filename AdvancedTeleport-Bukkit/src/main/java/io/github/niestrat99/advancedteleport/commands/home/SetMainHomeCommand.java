@@ -48,7 +48,8 @@ public final class SetMainHomeCommand extends AbstractHomeCommand {
                         "Info.setMainHome",
                         "Error.setMainHomeFail",
                         () -> err != null,
-                        "{home}", homeName, "{player}", target.getName()
+                        "home", homeName,
+                        "player", target.getName() // TODO: DisplyName
                     ));
 
                     return true;
@@ -65,7 +66,8 @@ public final class SetMainHomeCommand extends AbstractHomeCommand {
                     "Info.setMainHome",
                     "Error.setMainHomeFail",
                     () -> err != null,
-                    "{home}", homeName, "{player}", args[0]
+                    "home", homeName,
+                    "player", args[0] // TODO: Displyname
                 ));
 
                 return true;
@@ -87,7 +89,7 @@ public final class SetMainHomeCommand extends AbstractHomeCommand {
                     () -> err != null,
                     "{home}", homeName
                 ));
-            } else CustomMessages.sendMessage(sender, "Error.noAccessHome", "{home}", home.getName());
+            } else CustomMessages.sendMessage(sender, "Error.noAccessHome", "home", home.getName());
         }
 
         return true;
@@ -101,7 +103,7 @@ public final class SetMainHomeCommand extends AbstractHomeCommand {
     ) {
         atTarget.addHome(homeName, player.getLocation(), player).whenCompleteAsync((ignored, err) -> {
             if (err != null) {
-                CustomMessages.sendMessage(sender, "Error.setHomeFail", "{home}", homeName);
+                CustomMessages.sendMessage(sender, "Error.setHomeFail", "home", homeName);
                 return;
             }
 
@@ -111,7 +113,8 @@ public final class SetMainHomeCommand extends AbstractHomeCommand {
                 "Info.setAndMadeMainHome",
                 "Error.setMainHomeFail",
                 () -> err2 != null,
-                "{home}", homeName, "{player}", atTarget.getPlayer().getName()
+                "home", homeName,
+                "player", atTarget.getPlayer().displayName()
             ));
         });
     }

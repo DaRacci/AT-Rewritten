@@ -39,7 +39,7 @@ public class WarpCommand extends AbstractWarpCommand {
 
         int cooldown = CooldownManager.secondsLeftOnCooldown("warp", player);
         if (cooldown > 0) {
-            CustomMessages.sendMessage(sender, "Error.onCooldown", "{time}", String.valueOf(cooldown));
+            CustomMessages.sendMessage(sender, "Error.onCooldown", "time", String.valueOf(cooldown));
             return true;
         }
         if (AdvancedTeleportAPI.getWarps().containsKey(args[0])) {
@@ -61,7 +61,7 @@ public class WarpCommand extends AbstractWarpCommand {
             found = player.hasPermission("at.member.warp." + warp.getName().toLowerCase());
         }
         if (!found) {
-            CustomMessages.sendMessage(player, "Error.noPermissionWarp", "{warp}", warp.getName());
+            CustomMessages.sendMessage(player, "Error.noPermissionWarp", "warp", warp.getName());
             return;
         }
         ATTeleportEvent event = new ATTeleportEvent(player, warp.getLocation(), player.getLocation(), warp.getName(), ATTeleportEvent.TeleportType.WARP);

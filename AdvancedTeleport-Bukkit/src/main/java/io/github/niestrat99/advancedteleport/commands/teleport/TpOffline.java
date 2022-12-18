@@ -37,7 +37,7 @@ public class TpOffline extends TeleportATCommand {
             public void onSuccess(Location data) {
                 Bukkit.getScheduler().runTask(CoreClass.getInstance(), () -> {
                     PaperLib.teleportAsync((Player) sender, data);
-                    CustomMessages.sendMessage(sender, "Teleport.teleportedToOfflinePlayer", "{player}", args[0]);
+                    CustomMessages.sendMessage(sender, "Teleport.teleportedToOfflinePlayer", "player", args[0]);
                 });
             }
 

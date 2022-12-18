@@ -36,7 +36,7 @@ public class TpaHere extends TeleportATCommand {
         UUID playerUuid = player.getUniqueId();
         int cooldown = CooldownManager.secondsLeftOnCooldown("tpahere", player);
         if (cooldown > 0) {
-            CustomMessages.sendMessage(sender, "Error.onCooldown", "{time}", String.valueOf(cooldown));
+            CustomMessages.sendMessage(sender, "Error.onCooldown", "time", String.valueOf(cooldown));
             return true;
         }
         if (MovementManager.getMovement().containsKey(playerUuid)) {
@@ -55,13 +55,13 @@ public class TpaHere extends TeleportATCommand {
         Player target = Bukkit.getPlayer(args[0]);
         String result = ConditionChecker.canTeleport(player, target, "tpahere");
         if (!result.isEmpty()) {
-            CustomMessages.sendMessage(player, result, "{player}", args[0], "{world}", target == null ? "<No Such World>" : target.getWorld().getName());
+            CustomMessages.sendMessage(player, result, "player", args[0], "world", target == null ? "<No Such World>" : target.getWorld().getName());
             return true;
         }
         if (PaymentManager.getInstance().canPay("tpahere", player)) {
             int requestLifetime = NewConfig.get().REQUEST_LIFETIME.get();
             CustomMessages.sendMessage(sender, "Info.requestSent",
-                    "{player}", target.getName(), "{lifetime}", String.valueOf(requestLifetime));
+                    "player", target.getName(), "lifetime", String.valueOf(requestLifetime));
             CoreClass.playSound("tpahere", "sent", player);
             ATPlayer targetPlayer = ATPlayer.getPlayer(target);
 
@@ -69,14 +69,14 @@ public class TpaHere extends TeleportATCommand {
                 ((ATFloodgatePlayer) targetPlayer).sendRequestFormTPAHere(player);
             } else {
                 CustomMessages.sendMessage(target, "Info.tpaRequestHere",
-                        "{player}", sender.getName(), "{lifetime}", String.valueOf(requestLifetime));
+                        "{player}", sender.getName(), "lifetime", String.valueOf(requestLifetime));
             }
 
             BukkitRunnable run = new BukkitRunnable() {
                     @Override
                     public void run() {
                         if (NewConfig.get().NOTIFY_ON_EXPIRE.get()) {
-                            CustomMessages.sendMessage(sender, "Error.requestExpired", "{player}",
+                            CustomMessages.sendMessage(sender, "Error.requestExpired", "player",
                                     target.getName());
 
                             TeleportRequest.removeRequest(TeleportRequest.getRequestByReqAndResponder(target,

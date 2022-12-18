@@ -42,9 +42,9 @@ public class TpoHere extends TeleportATCommand {
             CustomMessages.sendMessage(sender, "Error.noSuchPlayer");
             return true;
         }
-        CustomMessages.sendMessage(sender, "Teleport.teleportingPlayerToSelf", "{player}",
+        CustomMessages.sendMessage(sender, "Teleport.teleportingPlayerToSelf", "player",
                 target.getName());
-        CustomMessages.sendMessage(target, "Teleport.teleportingSelfToPlayer", "{player}",
+        CustomMessages.sendMessage(target, "Teleport.teleportingSelfToPlayer", "player",
                 sender.getName());
         PaperLib.teleportAsync(target, player.getLocation(), PlayerTeleportEvent.TeleportCause.COMMAND);
         return true;

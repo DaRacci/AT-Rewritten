@@ -42,7 +42,7 @@ public class Tpo extends TeleportATCommand {
         if (target == null) {
             CustomMessages.sendMessage(sender, "Error.noSuchPlayer");
         } else {
-            CustomMessages.sendMessage(sender, "Teleport.teleporting", "{player}", target.getName());
+            CustomMessages.sendMessage(sender, "Teleport.teleporting", "player", target.getName());
             PaperLib.teleportAsync(player, target.getLocation(), PlayerTeleportEvent.TeleportCause.COMMAND);
         }
         return true;

@@ -36,7 +36,7 @@ public class MoveWarpCommand extends AbstractWarpCommand {
         Warp warp = AdvancedTeleportAPI.getWarps().get(args[0]);
         if (warp != null) {
             warp.setLocation(warpLoc, sender).thenAcceptAsync(result ->
-                    CustomMessages.sendMessage(sender, "Info.movedWarp", "{warp}", args[0]));
+                    CustomMessages.sendMessage(sender, "Info.movedWarp", "warp", args[0]));
         } else {
             CustomMessages.sendMessage(sender, "Error.noSuchWarp");
         }

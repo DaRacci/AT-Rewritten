@@ -36,7 +36,7 @@ public class DeleteWarpCommand extends AbstractWarpCommand {
                  "Error.deleteWarpFail",
                  "Info.deletedWarp,",
                  () -> exception != null,
-                "{warp}", args[0]
+                "warp", args[0]
              ));
         } else CustomMessages.sendMessage(sender, "Error.noWarpInput");
 

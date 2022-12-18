@@ -58,7 +58,8 @@ public final class DelHomeCommand extends AbstractHomeCommand {
             "Info.homeDeleted",
             "Error.deleteHomeFailed",
             () -> err == null,
-            "{home}", name, "{player}", player.getName()
+            "home", name,
+            "player", player.getName() // TOOD: Displayname
         ));
     }
 

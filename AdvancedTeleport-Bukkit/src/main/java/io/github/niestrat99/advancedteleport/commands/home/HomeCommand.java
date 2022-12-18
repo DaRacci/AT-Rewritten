@@ -39,7 +39,7 @@ public final class HomeCommand extends AbstractHomeCommand {
 
         final var cooldown = CooldownManager.secondsLeftOnCooldown("home", player);
         if (cooldown > 0) {
-            CustomMessages.sendMessage(player, "Error.onCooldown", "{time}", String.valueOf(cooldown));
+            CustomMessages.sendMessage(player, "Error.onCooldown", "time", String.valueOf(cooldown));
             return true;
         }
 
@@ -54,7 +54,7 @@ public final class HomeCommand extends AbstractHomeCommand {
                 if (atPlayer.canAccessHome(home)) {
                     teleport(player, home);
                 } else {
-                    CustomMessages.sendMessage(sender, "Error.noAccessHome", "{home}", home.getName());
+                    CustomMessages.sendMessage(sender, "Error.noAccessHome", "home", home.getName());
                 }
             } else if (NewConfig.get().ADD_BED_TO_HOMES.get()) {
                 Home home = atPlayer.getBedSpawn();

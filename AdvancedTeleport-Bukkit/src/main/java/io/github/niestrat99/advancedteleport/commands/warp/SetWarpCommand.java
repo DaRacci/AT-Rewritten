@@ -42,9 +42,9 @@ public class SetWarpCommand extends AbstractWarpCommand {
 
         if (!AdvancedTeleportAPI.getWarps().containsKey(args[0])) {
             AdvancedTeleportAPI.setWarp(args[0], player, warp).thenAcceptAsync(result ->
-                    CustomMessages.sendMessage(sender, "Info.setWarp", "{warp}", args[0]));
+                    CustomMessages.sendMessage(sender, "Info.setWarp", "warp", args[0]));
         } else {
-            CustomMessages.sendMessage(sender, "Error.warpAlreadySet", "{warp}", args[0]);
+            CustomMessages.sendMessage(sender, "Error.warpAlreadySet", "warp", args[0]);
         }
         return true;
     }

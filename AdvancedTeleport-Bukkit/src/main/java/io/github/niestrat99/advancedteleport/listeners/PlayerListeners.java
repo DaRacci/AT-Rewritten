@@ -37,8 +37,8 @@ public class PlayerListeners implements Listener {
         // Get the current version
         String currentVersion = CoreClass.getInstance().getDescription().getVersion();
         // let 'em know :D
-        CustomMessages.sendMessage(event.getPlayer(), "Info.updateInfo", "{version}", currentVersion,
-                "{new-version}", newVersion, "{title}", title);
+        CustomMessages.sendMessage(event.getPlayer(), "Info.updateInfo", "version", currentVersion,
+                "new-version", newVersion, "title", title);
     }
 
     @EventHandler

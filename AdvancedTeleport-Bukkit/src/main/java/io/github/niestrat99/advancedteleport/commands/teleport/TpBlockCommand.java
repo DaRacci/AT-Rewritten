@@ -57,7 +57,7 @@ public class TpBlockCommand extends TeleportATCommand {
                     "Info.block",
                     "Error.blockFail",
                     () -> err != null,
-                    "{player}", target.getName()
+                    "player", target.getName()
                 ));
             } else {
                 atPlayer.blockUser(target).whenCompleteAsync((ignored, err) -> CustomMessages.failable(
@@ -65,7 +65,7 @@ public class TpBlockCommand extends TeleportATCommand {
                     "Info.blockPlayer",
                     "Error.blockFail",
                     () -> err != null,
-                    "{player}", target.getName()
+                    "player", target.getName()
                 ));
             }
         });

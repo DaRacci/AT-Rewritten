@@ -72,7 +72,7 @@ public class Tpr extends ATCommand {
     public static boolean randomTeleport(Player player, CommandSender sender, World world) {
         int cooldown = CooldownManager.secondsLeftOnCooldown("tpr", player);
         if (cooldown > 0) {
-            CustomMessages.sendMessage(sender, "Error.onCooldown", "{time}", String.valueOf(cooldown));
+            CustomMessages.sendMessage(sender, "Error.onCooldown", "time", String.valueOf(cooldown));
             return true;
         }
         if (NewConfig.get().WHITELIST_WORLD.get()) {
@@ -106,7 +106,7 @@ public class Tpr extends ATCommand {
         String conditionResult = ConditionChecker.canTeleport(new Location(player.getWorld(), 0, 0, 0),
                 new Location(world, 0, 0, 0), "tpr", player);
         if (!conditionResult.isEmpty()) {
-            CustomMessages.sendMessage(player, conditionResult, "{world}", world.getName());
+            CustomMessages.sendMessage(player, conditionResult, "world", world.getName());
             return true;
         }
 

@@ -50,7 +50,7 @@ public class Back extends TeleportATCommand {
         // Check the player's cooldown
         int cooldown = CooldownManager.secondsLeftOnCooldown("back", player);
         if (cooldown > 0) {
-            CustomMessages.sendMessage(sender, "Error.onCooldown", "{time}", String.valueOf(cooldown));
+            CustomMessages.sendMessage(sender, "Error.onCooldown", "time", String.valueOf(cooldown));
             return true;
         }
 
