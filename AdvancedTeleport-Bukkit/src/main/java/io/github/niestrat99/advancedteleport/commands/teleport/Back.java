@@ -46,13 +46,6 @@ public final class Back extends TeleportATCommand implements TimedATCommand {
         // Get the ATPlayer object
         ATPlayer atPlayer = ATPlayer.getPlayer(player);
 
-        // Check the player's cooldown
-        int cooldown = CooldownManager.secondsLeftOnCooldown("back", player);
-        if (cooldown > 0) {
-            CustomMessages.sendMessage(sender, "Error.onCooldown", "time", String.valueOf(cooldown));
-            return true;
-        }
-
         // Get the player's previous location
         Location loc = atPlayer.getPreviousLocation();
 

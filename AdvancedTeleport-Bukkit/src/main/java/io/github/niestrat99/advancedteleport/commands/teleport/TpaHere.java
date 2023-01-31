@@ -57,7 +57,7 @@ public final class TpaHere extends TeleportATCommand implements TimedATCommand {
                 ((ATFloodgatePlayer) targetPlayer).sendRequestFormTPAHere(player);
             } else {
                 CustomMessages.sendMessage(target, "Info.tpaRequestHere",
-                        "{player}", sender.getName(), "lifetime", String.valueOf(requestLifetime));
+                        "player", sender.getName(), "lifetime", String.valueOf(requestLifetime));
             }
             CoreClass.playSound("tpahere", "received", target);
 

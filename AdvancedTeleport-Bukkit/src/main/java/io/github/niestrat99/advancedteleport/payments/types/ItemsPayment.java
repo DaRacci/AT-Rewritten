@@ -89,8 +89,8 @@ public class ItemsPayment extends Payment {
         }
         if (amount > 0) {
             CustomMessages.sendMessage(player, "Info.paymentItems",
-                    "{amount}", String.valueOf(amount),
-                    "{type}", name);
+                    "amount", String.valueOf(amount),
+                    "type", name);
         }
     }
 

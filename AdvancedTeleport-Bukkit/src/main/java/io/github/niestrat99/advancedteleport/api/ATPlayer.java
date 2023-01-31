@@ -158,7 +158,7 @@ public class ATPlayer {
         // If there's a movement timer, apply it - otherwise, teleport them immediately
         if (warmUp > 0 && !player.hasPermission("at.admin.bypass.timer")) {
             MovementManager.createMovementTimer(player, event.getToLocation(), command, teleportMsg, warmUp,
-                    "{home}", event.getLocName(), "{warp}", event.getLocName());
+                    "home", event.getLocName(), "warp", event.getLocName());
         } else {
             ParticleManager.onTeleport(player, command);
             PaperLib.teleportAsync(player, event.getToLocation(), PlayerTeleportEvent.TeleportCause.COMMAND);

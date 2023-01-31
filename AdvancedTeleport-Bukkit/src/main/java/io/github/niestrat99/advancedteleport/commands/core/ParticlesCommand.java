@@ -63,7 +63,7 @@ public final class ParticlesCommand extends SubATCommand {
                 return false;
             }
             NewConfig.get().set("waiting-particles." + type, data);
-            CustomMessages.sendMessage(sender, "Info.specificParticlesUpdated", "{type}", type);
+            CustomMessages.sendMessage(sender, "Info.specificParticlesUpdated", "type", type);
         }
 
         // Then save the config.

@@ -97,7 +97,7 @@ public class TeleportTrackingManager implements Listener {
             if (atPlayer.getPreviousLocation().getWorld() == null) return;
             ConfigSection deathManagement = NewConfig.get().DEATH_MANAGEMENT.get();
             String spawnCommand = deathManagement.getString(atPlayer.getPreviousLocation().getWorld().getName());
-            if (spawnCommand == null || spawnCommand.equals("{default}")) {
+            if (spawnCommand == null || spawnCommand.equals("default")) {
                 spawnCommand = deathManagement.getString("default");
                 if (spawnCommand == null) return;
             }
@@ -110,7 +110,7 @@ public class TeleportTrackingManager implements Listener {
     private static boolean handleSpawn(PlayerRespawnEvent e, String spawnCommand) {
         ATPlayer atPlayer = ATPlayer.getPlayer(e.getPlayer());
         ConfigSection deathManagement = NewConfig.get().DEATH_MANAGEMENT.get();
-        if (spawnCommand.equals("{default}")) {
+        if (spawnCommand.equals("default")) {
             spawnCommand = deathManagement.getString("default");
             if (spawnCommand == null) return false;
         }

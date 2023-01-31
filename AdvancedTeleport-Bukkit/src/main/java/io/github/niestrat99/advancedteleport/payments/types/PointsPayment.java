@@ -74,8 +74,8 @@ public class PointsPayment extends Payment {
         player.giveExp(-expPoints);
         if (expPoints > 0) {
             CustomMessages.sendMessage(player, "Info.paymentEXP",
-                    "{amount}", String.valueOf(levels.getPaymentAmount()),
-                    "{levels}", String.valueOf(player.getLevel()));
+                    "amount", String.valueOf(levels.getPaymentAmount()),
+                    "levels", String.valueOf(player.getLevel()));
         }
     }
 

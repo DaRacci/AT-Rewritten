@@ -528,9 +528,9 @@ public final class NewConfig extends ATConfig {
             addDefault(type + ".enabled", !type.equals("homes"), "Whether the icons for " + type + " will be added at all.");
             addDefault(type + ".default-icon", singular + "-default", "The default icon for " + type + " in the map.");
             addDefault(type + ".shown-by-default", true, "Whether the player viewing the map has to explicitly enable the layer to view " + type + " on the map.");
-            addDefault(type + ".hover-tooltip", "{name}", "The tooltip that will appear when someone hovers over the icon in the map." +
+            addDefault(type + ".hover-tooltip", "name", "The tooltip that will appear when someone hovers over the icon in the map." +
                     "\nFor Dynmap, this supports HTML formatting.");
-            addDefault(type + ".click-tooltip", "{name}", "Squaremap only - the tooltip that will appear when someone clicks on the icon.");
+            addDefault(type + ".click-tooltip", "name", "Squaremap only - the tooltip that will appear when someone clicks on the icon.");
             addDefault(type + ".icon-size", "32", "The scale of the icon on the map.\n" +
                     "With Dynmap, only 8, 16 and 32 are supported. With Squaremap, 2147483647 is your limit. But don't try it.");
             addDefault(type + ".layer-name", capitalised, "The layer display name that appears on the map.");
@@ -557,13 +557,13 @@ public final class NewConfig extends ATConfig {
                 " Hub, you'd type warp:Hub\n" +
                 "- tpr - Teleports the player to a random location. Can only be used when the rapid response system " +
                 "is enabled." +
-                "- {default} - Uses the default respawn option, which is spawn unless set differently.\n" +
+                "- default - Uses the default respawn option, which is spawn unless set differently.\n" +
                 "If you're using EssentialsX Spawn and want AT to take over respawn mechanics, set " +
                 "respawn-listener-priority in EssX's config.yml file to lowest.");
 
         makeSectionLenient("death-management");
         addDefault("death-management.default", "bed;spawn");
-        addExample("death-management.world", "{default}");
+        addExample("death-management.world", "default");
         addExample("death-management.special-world", "warp:Special");
         addExample("death-management.another-world", "bed");
 

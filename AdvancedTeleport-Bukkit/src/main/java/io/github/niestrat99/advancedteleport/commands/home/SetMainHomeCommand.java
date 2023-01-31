@@ -88,7 +88,7 @@ public final class SetMainHomeCommand extends AbstractHomeCommand implements Pla
                     "Info.setMainHome",
                     "Error.setMainHomeFail",
                     () -> err != null,
-                    "{home}", homeName
+                    "home", homeName
                 ));
             } else CustomMessages.sendMessage(sender, "Error.noAccessHome", "home", home.getName());
         }

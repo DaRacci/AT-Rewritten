@@ -100,12 +100,12 @@ public abstract class SQLManager {
             return new SQLCallback<>() {
                 @Override
                 public void onSuccess(Boolean data) {
-                    CustomMessages.sendMessage(sender, success, placeholders);
+                    CustomMessages.sendMessage(sender, success, (Object[]) placeholders);
                 }
 
                 @Override
                 public void onFail() {
-                    CustomMessages.sendMessage(sender, fail, placeholders);
+                    CustomMessages.sendMessage(sender, fail, (Object[]) placeholders);
                 }
             };
         }

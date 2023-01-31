@@ -59,7 +59,7 @@ public final class ATFloodgatePlayer extends ATPlayer {
         // Set up the form
         SimpleForm form = SimpleForm.builder()
             .title(CustomMessages.asString("Forms.tpa-received-title"))
-            .content(CustomMessages.asString("Forms.tpa-received-description", "{player}", (Supplier<Component>) sender::displayName))
+            .content(CustomMessages.asString("Forms.tpa-received-description", "player", (Supplier<Component>) sender::displayName))
             .button(CustomMessages.asString("Forms.tpa-received-accept"))
             .button(CustomMessages.asString("Forms.tpa-received-deny"))
             .build();
@@ -77,7 +77,7 @@ public final class ATFloodgatePlayer extends ATPlayer {
         // Set up the form
         SimpleForm form = SimpleForm.builder()
                 .title(CustomMessages.asString("Forms.tpahere-received-title"))
-                .content(CustomMessages.asString("Forms.tpahere-received-description", "{player}", (Supplier<Component>) sender::displayName))
+                .content(CustomMessages.asString("Forms.tpahere-received-description", "player", (Supplier<Component>) sender::displayName))
                 .button(CustomMessages.asString("Forms.tpahere-received-accept"))
                 .button(CustomMessages.asString("Forms.tpahere-received-deny"))
                 .build();

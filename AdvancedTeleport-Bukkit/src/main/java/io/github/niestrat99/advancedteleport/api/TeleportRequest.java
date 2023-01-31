@@ -65,7 +65,7 @@ public record TeleportRequest(
             CustomMessages.sendMessage(
                 otherRequest.requester(),
                 "Error.requestDisplaced",
-                "{player}", otherRequest.responder().getName()
+                "player", otherRequest.responder().getName()
             );
         });
     }

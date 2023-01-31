@@ -127,21 +127,21 @@ public final class TpLoc extends TeleportATCommand implements PlayerCommand {
             PaperLib.teleportAsync(target, location, PlayerTeleportEvent.TeleportCause.COMMAND);
             if (player != target) {
                 CustomMessages.sendMessage(player, "Info.teleportedToLocOther",
-                        "{x}", String.valueOf(loc[0]),
-                        "{y}", String.valueOf(loc[1]),
-                        "{z}", String.valueOf(loc[2]),
-                        "{yaw}", String.valueOf(yaw),
-                        "{pitch}", String.valueOf(pitch),
-                        "{world}", world.getName(),
-                        "{player}", args[6]);
+                        "x", String.valueOf(loc[0]),
+                        "y", String.valueOf(loc[1]),
+                        "z", String.valueOf(loc[2]),
+                        "yaw", String.valueOf(yaw),
+                        "pitch", String.valueOf(pitch),
+                        "world", world.getName(),
+                        "player", args[6]);
             } else {
                 CustomMessages.sendMessage(player, "Info.teleportedToLoc",
-                        "{x}", String.valueOf(loc[0]),
-                        "{y}", String.valueOf(loc[1]),
-                        "{z}", String.valueOf(loc[2]),
-                        "{yaw}", String.valueOf(yaw),
-                        "{pitch}", String.valueOf(pitch),
-                        "{world}", world.getName());
+                        "x", String.valueOf(loc[0]),
+                        "y", String.valueOf(loc[1]),
+                        "z", String.valueOf(loc[2]),
+                        "yaw", String.valueOf(yaw),
+                        "pitch", String.valueOf(pitch),
+                        "world", world.getName());
             }
         }
 

@@ -61,7 +61,7 @@ public final class PurgeCommand extends SubATCommand {
                 case "homes" -> HomeSQLManager.get().purgeHomes(world.getName(), new SQLManager.SQLCallback<>() {
                     @Override
                     public void onSuccess(Void data) {
-                        CustomMessages.sendMessage(sender, "Info.purgeHomesWorld", "{world}", args[2]);
+                        CustomMessages.sendMessage(sender, "Info.purgeHomesWorld", "world", args[2]);
                     }
 
                     @Override
@@ -72,7 +72,7 @@ public final class PurgeCommand extends SubATCommand {
                 case "warps" -> WarpSQLManager.get().purgeWarps(world.getName(), new SQLManager.SQLCallback<>() {
                     @Override
                     public void onSuccess(Void data) {
-                        CustomMessages.sendMessage(sender, "Info.purgeWarpsWorld", "{world}", args[2]);
+                        CustomMessages.sendMessage(sender, "Info.purgeWarpsWorld", "world", args[2]);
                     }
 
                     @Override
@@ -92,7 +92,7 @@ public final class PurgeCommand extends SubATCommand {
                     case "homes" -> HomeSQLManager.get().purgeHomes(player.getUniqueId(), new SQLManager.SQLCallback<>() {
                         @Override
                         public void onSuccess(Void data) {
-                            CustomMessages.sendMessage(sender, "Info.purgeHomesCreator", "{player}", args[2]);
+                            CustomMessages.sendMessage(sender, "Info.purgeHomesCreator", "player", args[2]);
                         }
 
                         @Override
@@ -103,7 +103,7 @@ public final class PurgeCommand extends SubATCommand {
                     case "warps" -> WarpSQLManager.get().purgeWarps(player.getUniqueId(), new SQLManager.SQLCallback<>() {
                         @Override
                         public void onSuccess(Void data) {
-                            CustomMessages.sendMessage(sender, "Info.purgeWarpsCreator", "{player}", args[2]);
+                            CustomMessages.sendMessage(sender, "Info.purgeWarpsCreator", "player", args[2]);
                         }
 
                         @Override

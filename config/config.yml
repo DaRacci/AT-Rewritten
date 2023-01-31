@@ -446,7 +446,7 @@ teleport-to-spawn-on-every-join: false
 # If you're using EssentialsX Spawn and want AT to take over respawn mechanics, set respawn-listener-priority in EssX's config.yml file to lowest.
 death-management:
   default: spawn
-  world: '{default}'
+  world: 'default'
   special-world: warp:Special
   another-world: bed
 

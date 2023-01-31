@@ -72,7 +72,7 @@ public final class SetHomeCommand extends AbstractHomeCommand implements PlayerC
         ATPlayer atPlayer = ATPlayer.getPlayer(settingPlayer);
 
         if (atPlayer.getHome(homeName) != null) {
-            CustomMessages.sendMessage(sender, "Error.homeAlreadySet", "{home}", homeName);
+            CustomMessages.sendMessage(sender, "Error.homeAlreadySet", "home", homeName);
             return;
         }
 

@@ -35,7 +35,7 @@ public final class TpHereOffline extends TeleportATCommand implements PlayerComm
                 @Override
                 public void onSuccess(Boolean data) {
                     Bukkit.getScheduler().runTask(CoreClass.getInstance(), () ->
-                            CustomMessages.sendMessage(sender, "Teleport.teleportedOfflinePlayerHere", "{player}"
+                            CustomMessages.sendMessage(sender, "Teleport.teleportedOfflinePlayerHere", "player"
                                     , args[0]));
                 }
 
